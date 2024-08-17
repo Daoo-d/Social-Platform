@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import Post
+from .models import Post,Tag
 from .forms import CreatePost,EditPost
 import requests
 from bs4 import BeautifulSoup # type: ignore
@@ -8,10 +8,17 @@ from django.contrib import messages
 
 
 # Create your views here.
-def home(request):
-    posts = Post.objects.all()
+def home(request,tag=None):
+    if tag:
+        posts = Post.objects.filter(tags__slug=tag)
+        tag=get_object_or_404(Tag,slug=tag)
+    else:
+        posts = Post.objects.all()
+    Categories = Tag.objects.all()    
     return render(request,"a_posts/home.html",{
         "posts":posts,
+        "tag":tag,
+        "Categories":Categories
     })
 
 def post_page(request,pk):

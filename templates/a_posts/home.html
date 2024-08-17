@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}
     Insta fam
 {% endblock title %}
@@ -33,7 +34,7 @@
                 <p class="text-5xl mb-10 px-4 font2">{{post.description}}</p>
                 <div class="flex items-center gap-2 text-sm mb-5">
                     {% for tag in post.tags.all %}
-                    <a class="bg-gray-300 rounded-full px-3 py-1 hover:bg-gray-500 hover:text-white" href="">
+                    <a class="bg-gray-300 rounded-full px-3 py-1 hover:bg-gray-500 hover:text-white" href="{% url "category" tag.slug %}">
                         {{tag}}
                     </a>
                     {% endfor %}
@@ -61,55 +62,47 @@
         <section class="card p-4">
             <h2>Categories</h2>
             <ul class="hoverlist">
-                <li class="highlight"><a href="">
-                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=50&id=2601&format=png" alt="">
-                    <span class="text-sm font-bold">Landscape</span>
+                {% for category in Categories %}
+                <li {% if tag.slug == category.slug %}class="highlight"{% endif %} ><a href="{% url "category" category.slug %}">
+                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="{{category.image.url}}" alt="">
+                    <span class="text-sm font-bold">{{category.name}}</span>
                 </a></li>
-                <li><a href="">
-                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=32&id=18179&format=png" alt="">
-                    <span class="text-sm font-bold">People</span>
-                </a></li>
-                <li><a href="">
-                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=50&id=Hy6X0DME1x74&format=png" alt="">
-                    <span class="text-sm font-bold">Animal</span>
-                </a></li>
-                <li><a href="">
-                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=50&id=19297&format=png" alt="">
-                    <span class="text-sm font-bold">Abstract</span>
-                </a></li>
-                <li><a href="">
-                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=50&id=70942&format=png" alt="">
-                    <span class="text-sm font-bold">Black & whites</span>
-                </a></li>
+                {% endfor %}
             </ul>
         </section>
         <section class="card p-4">
-            <h2>Photos</h2>
+            <div class="flex items-center">
+                <img class="w-6 mr-2 -mt-3" src="{% static "images/fireheart_black.svg" %}" alt="">
+                <h2>Top Posts</h2>
+            </div>
             <ul class="hoverlist">
                 <li><a href="">
                     <img class="w-10 h-10 object-cover rounded-md mr-3" src="https://live.staticflickr.com/7311/12835549794_26b9f63ce1_m.jpg" alt="">
-                    <img class="w-6 h-6 object-cover mr-0.5" src="https://img.icons8.com/?size=50&id=676&format=png" alt="">
+                    <img class="w-6 h-6 object-cover mr-0.5" src="{% static "images/avatar_default.svg" %}" alt="">
                     <span class="text-sm font-bold mr-1">Homies</span>
                     <span class="text-sm font-light text-gray-700">(5 likes)</span>
                 </a></li>
                 <li><a href="">
                     <img class="w-10 h-10 object-cover rounded-md mr-3" src="https://live.staticflickr.com/7311/12835549794_26b9f63ce1_m.jpg" alt="">
-                    <img class="w-6 h-6 object-cover mr-0.5" src="https://img.icons8.com/?size=50&id=676&format=png" alt="">
+                    <img class="w-6 h-6 object-cover mr-0.5" src="{% static "images/avatar_default.svg" %}" alt="">
                     <span class="text-sm font-bold mr-1">Homies</span>
                     <span class="text-sm font-light text-gray-700">(5 likes)</span>
                 </a></li>
             </ul>
         </section>
         <section class="card p-4">
-            <h2>Captions</h2>
+            <div class="flex items-center">
+                <img class="w-6 mr-2 -mt-3" src="{% static "images/fireheart_black.svg" %}" alt="">
+                <h2>Captions</h2>
+            </div>
             <ul class="hoverlist">
                 <li><a href="">
-                    <img class="w-8 h-8 object-cover mr-2" src="https://img.icons8.com/?size=50&id=676&format=png" alt="">
+                    <img class="w-8 h-8 object-cover mr-2" src="{% static "images/avatar_default.svg" %}" alt="">
                     <span class="text-sm font-bold mr-1">Harry</span>
                     <span class="text-sm font-light text-gray-700">(5 likes)</span>
                 </a></li>
                 <li><a href="">
-                    <img class="w-8 h-8 object-cover mr-2" src="https://img.icons8.com/?size=50&id=676&format=png" alt="">
+                    <img class="w-8 h-8 object-cover mr-2" src="{% static "images/avatar_default.svg" %}" alt="">
                     <span class="text-sm font-bold mr-1">Sam</span>
                     <span class="text-sm font-light text-gray-700">(5 likes)</span>
                 </a></li>

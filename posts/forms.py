@@ -19,11 +19,12 @@ class EditPost(forms.ModelForm):
         model = Post
         fields = ["description","tags"]
         labels={
-            "description":""
+            "description":"",
+            "tags":"Category"
         }
         widgets={
             "description":forms.Textarea(attrs={"rows":3,"class":"font2 text-4xl"}),
-            "tags":forms.CheckboxSelectMultiple()
+            "tags":forms.CheckboxSelectMultiple(attrs={"id":"id_tags"})
         }
 
 
