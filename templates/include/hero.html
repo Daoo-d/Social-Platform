@@ -3,6 +3,8 @@
     <div class="px-10 py-24 col-start-1 row-start-1">
         <h1 class="title_b">Awesome Photos & Captions</h1>
         <p class="text-lg font-bold mb-5">Share your favourite Pictures from gallery and add a great caption</p>
-        <a class="button" href="">Get Started</a>
+        {% if not user.is_authenticated %}
+        <a class="button" href="{% url "account_signup" %}">Get Started</a>
+        {% endif %}
     </div>
 </hero>

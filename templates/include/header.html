@@ -20,12 +20,13 @@
     x-transition:enter-end="opacity-100 translate-y-0"
     >
         <ul class="flex items-center navitems [&>li>a]:h-12 flex-col md:flex-row gap-8 -translate-y-10 md:translate-y-0 md:gap-0 justify-center h-full">
+            {% if user.is_authenticated %}
             <li><a href="{% url "homepage" %}">Home</a></li>
             <li><a href="{% url "create_post" %}">Create Post</a></li>
             <li x-data="{dropDownOpen : false}" class="relative">
                 <a @click="dropDownOpen = !dropDownOpen" @click.away="dropDownOpen = false" class="cursor-pointer select-none">
                 <img class="h-8 rounded-full object-cover bg-teal-200" src="https://img.icons8.com/doodle/48/bart-simpson.png" alt="bart-simpson"/>
-                Bart
+                {{request.user.username}}
                 <img x-bind:class="dropDownOpen ? 'rotate-180 duration-300' : '' " class="w-4" height="60" src="https://img.icons8.com/ios-glyphs/60/777777/expand-arrow--v1.png" alt="expand-arrow--v1"/>    
             </a>
             <div x-show="dropDownOpen" x-cloak class="absolute w-40 bg-white text-black right-0 p-2 rounded-lg z-20"
@@ -34,11 +35,16 @@
             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
             >
                 <ul class="hoverlist [&>li>a]:justify-end">
-                    <li><a href="">My Profile</a></li>
-                    <li><a href="">Logout</a></li>
+                    <li><a href="{% url "profile_page" %}">My Profile</a></li>
+                    <li><a href="">Edit Profile</a></li>
+                    <li><a href="{% url "account_logout" %}">Logout</a></li>
                 </ul>
             </div>
             </li>
+            {% else %}
+            <li><a href="{% url "account_login" %}">Login</a></li>
+            <li><a href="{% url "account_signup" %}">Sign up</a></li>
+            {% endif %}
         </ul>
     </nav>
 </header>
