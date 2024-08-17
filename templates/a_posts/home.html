@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}
+    Insta fam
+{% endblock title %}
+
+{% block content %}
+{% include "include/message.html" %}
+    {% include "include/header.html" %}
+    
+    {% include "include/hero.html" %}
+<content x-data="{mobileSideBarOpen : false}" class="grid grid-cols-3 max-w-7xl mx-auto mt-6">
+    <mobilecategory class="md:hidden col-span-full mx-auto mb-6 z-10 relative" >
+        <a @click="mobileSideBarOpen=!mobileSideBarOpen" class="flex items-center cursor-pointer select-none font-bold hover:bg-gray-300 rounded-lg p-3">
+            <span>Category</span>
+            <img x-bind:class="mobileSideBarOpen && 'rotate-180 duration-300'" class="w-4 ml-1.5" height="60" src="https://img.icons8.com/ios-glyphs/60/777777/expand-arrow--v1.png" alt="expand-arrow--v1"/>
+        </a>
+    </mobilecategory>
+    <main class="order-2 md:order-1 col-span-full md:col-span-2 mr-[5%] md:mx-[10%]">
+        {% for post in posts %}
+        <article class="card">
+            <div class="flex items-center justify-between px-4 py-14">
+                <h3 class="text-lg font-bold w-[50%] truncate">{{post.title}}</h3>
+                <div class="text-sm text-gray-500">from @<a href="" class="hover:underline">{{post.artist}}</a></div>
+            </div>
+            <figure>
+                <a href="{% url "post_page" post.pk %}"><img class="w-full" src={{post.image}} alt=""></a>
+            </figure>
+            <div class="p-4 pb-2">
+                <a class="flex items-center gap-1 mb-4" href="">
+                    <img class="w-8 h-8" src="https://img.icons8.com/ios/50/happy--v1.png" alt="happy--v1"/>
+                    <span class="font-bold hover:underline" >Lisa</span>
+                </a>
+                <p class="text-5xl mb-10 px-4 font2">{{post.description}}</p>
+                <div class="flex items-center gap-2 text-sm mb-5">
+                    {% for tag in post.tags.all %}
+                    <a class="bg-gray-300 rounded-full px-3 py-1 hover:bg-gray-500 hover:text-white" href="">
+                        {{tag}}
+                    </a>
+                    {% endfor %}
+                </div>
+                <div class="flex items-center justify-between text-sm px-2">
+                    <a class="font-bold hover:underlined" href="{% url "post_page" post.pk %}">Comments
+                        <span class="font-light text-gray-500 ml-2">3</span>
+                    </a>
+                    <div class="flex items-center gap-4 [&>a:hover]:underline">
+                        <div class="flex items-center gap-1"><img class="w-5 -mt" src="https://img.icons8.com/small/24/000000/fire-heart.png" alt="">1</div>
+                        <a href="">Like</a>
+                        <a href="{% url "edit_post" post.pk %}">Edit</a>
+                        <a href="{% url "delete_post" post.pk %}">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </main>
+    <aside x-show="mobileSideBarOpen" x-cloak class="md:!block order-1 md:order-2 col-span-full md:col-span-1  mr-[5%] md:mr-[20%]"
+    x-transition:enter="duration-300 ease-out"
+    x-transition:enter-start="opacity-0 -translate-y-56"
+    x-transition:enter-end="opacity-100 translate-y-0"
+    >
+        <section class="card p-4">
+            <h2>Categories</h2>
+            <ul class="hoverlist">
+                <li class="highlight"><a href="">
+                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=50&id=2601&format=png" alt="">
+                    <span class="text-sm font-bold">Landscape</span>
+                </a></li>
+                <li><a href="">
+                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=32&id=18179&format=png" alt="">
+                    <span class="text-sm font-bold">People</span>
+                </a></li>
+                <li><a href="">
+                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=50&id=Hy6X0DME1x74&format=png" alt="">
+                    <span class="text-sm font-bold">Animal</span>
+                </a></li>
+                <li><a href="">
+                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=50&id=19297&format=png" alt="">
+                    <span class="text-sm font-bold">Abstract</span>
+                </a></li>
+                <li><a href="">
+                    <img class="w-8 h-8 object-cover mr-2 -mt-1" src="https://img.icons8.com/?size=50&id=70942&format=png" alt="">
+                    <span class="text-sm font-bold">Black & whites</span>
+                </a></li>
+            </ul>
+        </section>
+        <section class="card p-4">
+            <h2>Photos</h2>
+            <ul class="hoverlist">
+                <li><a href="">
+                    <img class="w-10 h-10 object-cover rounded-md mr-3" src="https://live.staticflickr.com/7311/12835549794_26b9f63ce1_m.jpg" alt="">
+                    <img class="w-6 h-6 object-cover mr-0.5" src="https://img.icons8.com/?size=50&id=676&format=png" alt="">
+                    <span class="text-sm font-bold mr-1">Homies</span>
+                    <span class="text-sm font-light text-gray-700">(5 likes)</span>
+                </a></li>
+                <li><a href="">
+                    <img class="w-10 h-10 object-cover rounded-md mr-3" src="https://live.staticflickr.com/7311/12835549794_26b9f63ce1_m.jpg" alt="">
+                    <img class="w-6 h-6 object-cover mr-0.5" src="https://img.icons8.com/?size=50&id=676&format=png" alt="">
+                    <span class="text-sm font-bold mr-1">Homies</span>
+                    <span class="text-sm font-light text-gray-700">(5 likes)</span>
+                </a></li>
+            </ul>
+        </section>
+        <section class="card p-4">
+            <h2>Captions</h2>
+            <ul class="hoverlist">
+                <li><a href="">
+                    <img class="w-8 h-8 object-cover mr-2" src="https://img.icons8.com/?size=50&id=676&format=png" alt="">
+                    <span class="text-sm font-bold mr-1">Harry</span>
+                    <span class="text-sm font-light text-gray-700">(5 likes)</span>
+                </a></li>
+                <li><a href="">
+                    <img class="w-8 h-8 object-cover mr-2" src="https://img.icons8.com/?size=50&id=676&format=png" alt="">
+                    <span class="text-sm font-bold mr-1">Sam</span>
+                    <span class="text-sm font-light text-gray-700">(5 likes)</span>
+                </a></li>
+            </ul>
+        </section>
+    </aside>
+</content>
+
+{% endblock content %}
+
