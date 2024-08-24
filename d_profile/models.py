@@ -18,4 +18,12 @@ class Profile(models.Model):
             avatar = self.image.url
         except:
             avatar = static('images/avatar_default.svg')    
-        return avatar    
+        return avatar 
+
+    @property
+    def name(self):
+        try:
+            name = self.fullname
+        except:
+            name = self.user.username    
+        return name    

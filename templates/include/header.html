@@ -25,7 +25,7 @@
             <li><a href="{% url "create_post" %}">Create Post</a></li>
             <li x-data="{dropDownOpen : false}" class="relative">
                 <a @click="dropDownOpen = !dropDownOpen" @click.away="dropDownOpen = false" class="cursor-pointer select-none">
-                <img class="h-8 rounded-full object-cover bg-teal-200" src="https://img.icons8.com/doodle/48/bart-simpson.png" alt="bart-simpson"/>
+                <img class="h-8 rounded-full object-cover bg-teal-200" src="{{request.user.profile.avatar}}" alt="bart-simpson"/>
                 {{request.user.username}}
                 <img x-bind:class="dropDownOpen ? 'rotate-180 duration-300' : '' " class="w-4" height="60" src="https://img.icons8.com/ios-glyphs/60/777777/expand-arrow--v1.png" alt="expand-arrow--v1"/>    
             </a>

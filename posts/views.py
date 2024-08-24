@@ -4,6 +4,7 @@ from .forms import CreatePost,EditPost
 import requests
 from bs4 import BeautifulSoup # type: ignore
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -27,6 +28,7 @@ def post_page(request,pk):
         "post":post
     })
 
+@login_required
 def create_post(request):
     form = CreatePost()
     if request.method == "POST":
@@ -50,6 +52,7 @@ def create_post(request):
                 find_artist = soup.select('a.owner-name')
                 artist = find_artist[0].text.strip()
                 post.artist =artist
+                post.author = request.user
             except:
                 messages.success(request,'data not found')
                 return redirect('create_post')  
@@ -62,9 +65,9 @@ def create_post(request):
         "form":form
     })
 
+@login_required
 def delete_post(request,pk):
-    post = Post.objects.get(pk=pk)
-    post = get_object_or_404(Post,pk=pk)
+    post = get_object_or_404(Post,pk=pk,author=request.user)
     if request.method=="POST":
         post.delete()
         messages.success(request,'Post deleted')
@@ -73,8 +76,9 @@ def delete_post(request,pk):
         "post":post
     })
 
+@login_required
 def edit_post(request,pk):
-    post = get_object_or_404(Post,pk=pk)
+    post = get_object_or_404(Post,pk=pk,author=request.user)
     form=EditPost(instance=post)
     if request.method=='POST':
         form=EditPost(request.POST,instance=post)
