@@ -5,5 +5,6 @@ urlpatterns = [
     path('',views.profile_page,name="profile_page"),
     path('<username>',views.profile_page,name="user_profile"),
     path('edit/',views.edit_profile,name="edit_profile_page"),
-    path('delete/',views.delete_profile,name="del_profile")
+    path('delete/',views.delete_profile,name="del_profile"),
+    path('on-board/',views.edit_profile,name="profile_onboarding")
 ]

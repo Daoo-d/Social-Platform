@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import Post,Tag
-from .forms import CreatePost,EditPost
+from .models import Post,Tag,Comment
+from .forms import CreatePost,EditPost,CommentCreateForm,CommentReplyForm
 import requests
 from bs4 import BeautifulSoup # type: ignore
 from django.contrib import messages
@@ -24,8 +24,49 @@ def home(request,tag=None):
 
 def post_page(request,pk):
     post=get_object_or_404(Post,pk=pk)
+
+    commentForm = CommentCreateForm()
+    replyForm = CommentReplyForm()
+
     return render(request,"a_posts/post_page.html",{
-        "post":post
+        "post":post,
+        "commentForm":commentForm,
+        "replyForm":replyForm
+    })
+
+@login_required
+def comment_sent(request,pk):
+    post=get_object_or_404(Post,pk=pk)
+    if request.method=="POST":
+        form = CommentCreateForm(request.POST)
+        if form.is_valid:
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.parent_post = post
+            comment.save()
+    return redirect('post_page',post.pk) 
+
+@login_required
+def reply_sent(request,id):
+    comment=get_object_or_404(Comment,id=id)
+    if request.method=="POST":
+        form = CommentReplyForm(request.POST)
+        if form.is_valid:
+            reply = form.save(commit=False)
+            reply.author = request.user
+            reply.parent_comment = comment
+            reply.save()
+    return redirect('post_page',comment.parent_post.pk)        
+
+@login_required
+def delete_comment(request,id):
+    comment = get_object_or_404(Comment,id=id,author=request.user)
+    if request.method=="POST":
+        comment.delete()
+        messages.success(request,'Comment deleted')
+        return redirect('post_page',comment.parent_post.pk)
+    return render(request,"a_posts/delete_comment.html",{
+        "comment":comment
     })
 
 @login_required

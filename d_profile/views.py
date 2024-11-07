@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import Http404
+from django.urls import reverse
 from .form import EditProfile
 from .models import Profile
 from django.contrib import messages
@@ -11,10 +12,9 @@ from django.contrib.auth.decorators import login_required
 def profile_page(request,username=None):
     try:
         if username:
-            user = get_object_or_404(User,username=username)
+            profile = get_object_or_404(User,username=username).profile
         else:
-            user = request.user    
-        profile,created = Profile.objects.get_or_create(user=user)
+            profile = request.user.profile    
     except:
             raise Http404()
     return render(request,"d_profile/profile.html",{
@@ -32,7 +32,12 @@ def edit_profile(request):
             form.save()
             messages.success(request,'Profile updated successfully')
             return redirect('profile_page')
-    return render(request,"d_profile/edit_profile.html",{
+    if request.path == reverse('profile_onboarding'):
+        template = "d_profile/complet_profile.html"
+    else:
+        template = "d_profile/edit_profile.html"    
+
+    return render(request,template,{
         "form":form
     })
 
