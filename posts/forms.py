@@ -46,7 +46,7 @@ class CommentReplyForm(forms.ModelForm):
             "body":""
         }
         widgets = { 
-            'body': forms.TextInput(attrs={ 'placeholder': 'Add comment ...'}), 
+            'body': forms.TextInput(attrs={ 'placeholder': 'Add reply ...'}), 
             }        
 
 

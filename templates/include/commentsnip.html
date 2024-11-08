@@ -25,15 +25,11 @@
                 </svg>
             </div>
             Replies
-            <span class="font-light text-gray-500 ml-1">1</span>
+            <span class="font-light text-gray-500 ml-1">{{comment.replies.count}}</span>
         </a>
         <div class="flex items-center gap-4 [&>a:hover]:underline">
-            <div class="flex items-center gap-1">
-                <img class="w-5 -mt-1" src="https://img.icons8.com/small/24/000000/fire-heart.png">
-                1
-            </div>
-            
-            <a href="">Like</a>
+            {% include "snippets/commentLikes.html" %}
+
             {% if user.is_authenticated and comment.author == user %}
             <a href="{% url "comment_delete" comment.id %}">Delete</a>
             {% endif %}
@@ -45,9 +41,9 @@
             {% include "include/replyfile.html" %}
             {% endfor %}
 
-            <form method="POST" action = "{% url "reply_sent" comment.id %}" class="replyform flex justify-between" autocomplete="off">
+            <form method="POST" action = "{% url "reply_sent" comment.id %}" class="replyform flex align-items" autocomplete="off">
                 {% csrf_token %}
-                {{replyForm}}
+                {{replyForm.body}}
                 <button class="block" type="submit">Submit</button>
             </form>
         </div>

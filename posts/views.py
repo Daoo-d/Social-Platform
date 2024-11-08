@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import Post,Tag,Comment
+from .models import Post,Tag,Comment,Reply
 from .forms import CreatePost,EditPost,CommentCreateForm,CommentReplyForm
 import requests
 from bs4 import BeautifulSoup # type: ignore
 from django.contrib import messages
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
 
@@ -44,11 +45,11 @@ def comment_sent(request,pk):
             comment.author = request.user
             comment.parent_post = post
             comment.save()
-    return redirect('post_page',post.pk) 
+    return render(request,"snippets/addComment.html",{"comment":comment,"post":post}) 
 
 @login_required
-def reply_sent(request,id):
-    comment=get_object_or_404(Comment,id=id)
+def reply_sent(request,pk):
+    comment=get_object_or_404(Comment,id=pk)
     if request.method=="POST":
         form = CommentReplyForm(request.POST)
         if form.is_valid:
@@ -59,8 +60,8 @@ def reply_sent(request,id):
     return redirect('post_page',comment.parent_post.pk)        
 
 @login_required
-def delete_comment(request,id):
-    comment = get_object_or_404(Comment,id=id,author=request.user)
+def delete_comment(request,pk):
+    comment = get_object_or_404(Comment,id=pk,author=request.user)
     if request.method=="POST":
         comment.delete()
         messages.success(request,'Comment deleted')
@@ -68,6 +69,18 @@ def delete_comment(request,id):
     return render(request,"a_posts/delete_comment.html",{
         "comment":comment
     })
+
+@login_required
+def delete_reply(request,pk):
+    reply = get_object_or_404(Reply,id=pk,author=request.user)
+    if request.method=="POST":
+        reply.delete()
+        messages.success(request,'Reply deleted')
+        return redirect('post_page',reply.parent_comment.parent_post.pk)
+    return render(request,"a_posts/delete_reply.html",{
+        "reply":reply
+    })
+
 
 @login_required
 def create_post(request):
@@ -131,3 +144,33 @@ def edit_post(request,pk):
         "post":post,
         "form":form
     })    
+
+def like_toggle(model):
+    def inner_func(func):
+        def wrapper(request,*args,**kwargs):
+            post = get_object_or_404(model,id=kwargs.get("pk"))
+            user_exists = post.likes.filter(username=request.user.username).exists()
+
+            if post.author != request.user:
+                if user_exists:
+                    post.likes.remove(request.user)
+                else:
+                    post.likes.add(request.user)
+            return func(request,post)
+        return wrapper
+    return inner_func        
+
+@login_required
+@like_toggle(Post)
+def like_post(request,post):  
+    return render(request,"snippets/likes.html",{'post':post})    
+
+@login_required
+@like_toggle(Comment)
+def like_comment(request,post):  
+    return render(request,"snippets/commentLikes.html",{'comment':post}) 
+
+@login_required
+@like_toggle(Reply)
+def like_reply(request,post):  
+    return render(request,"snippets/replyLikes.html",{'reply':post}) 

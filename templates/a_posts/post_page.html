@@ -29,33 +29,41 @@
             </div>
             <div class="flex items-center justify-between text-sm px-2">
                 <a class="font-bold hover:underline" href="">
-                    Comments
-                    <span class="font-light text-gray-500 ml-2">{{post.comments.count}}</span>
+                    {% if post.comments.count %}
+                        Comments
+                        <span id="commentsCount-{{post.pk}}" class="font-light text-gray-500 ml-2">{{post.comments.count}}</span>
+                        {% else %}
+                            {% if user.is_authenticated %}
+                            Add Comment
+                            {% endif %}
+                        {% endif %}
                 </a>
                 <div class="flex items-center gap-4 [&>a:hover]:underline">
-                    <div class="flex items-center gap-1">
-                        <img class="w-5 -mt-1" src="https://img.icons8.com/small/24/000000/fire-heart.png">
-                        1
-                    </div>
-                    <a href="">Like</a>
+                    
+                    {% include "snippets/likes.html" %}
+
                     {% if user.is_authenticated and post.author == request.user %}
-                        <a href="{% url "edit_post" post.pk %}">Edit</a>
-                        <a href="{% url "delete_post" post.pk %}">Delete</a>
-                        {% endif %}
+                    <a href="{% url "edit_post" post.pk %}">Edit</a>
+                    <a href="{% url "delete_post" post.pk %}">Delete</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </article>
     
     <div class="card !pb-0 -mt-3">
-        <form method="POST" action = "{% url "comment_sent" post.pk %}" class="flex items-center p-4" autocomplete="off">
+        <form class="flex items-center p-4" autocomplete="off"
+        hx-post = "{% url "comment_sent" post.pk %}" 
+        hx-target = "#tab-contents"
+        hx-swap = "afterbegin"
+        _="on htmx:afterRequest reset() me">
             {% csrf_token %}
-            {{ commentForm }}
+            {{ commentForm.body }}
             <button @click="open = false" class="block ml-2" type="submit">Submit</button>
         </form>
     </div>
     
-    
+    {% if post.comments.count %}
     <div class="mb-20">
         <div id="tabs" class="ml-4 flex gap-1 mb-4">
             <a class="tab selected">Newest First</a> 
@@ -68,6 +76,6 @@
             {% endfor %}
         </div>
     </div>
-    
+    {% endif %}
 </content>
 {% endblock content %}

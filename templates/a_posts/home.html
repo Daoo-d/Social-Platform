@@ -58,8 +58,9 @@
                         {% endif %}
                     </a>
                     <div class="flex items-center gap-4 [&>a:hover]:underline">
-                        <div class="flex items-center gap-1"><img class="w-5 -mt" src="https://img.icons8.com/small/24/000000/fire-heart.png" alt="">1</div>
-                        <a href="">Like</a>
+                        
+                        {% include "snippets/likes.html" %}
+
                         {% if user.is_authenticated and post.author == request.user %}
                         <a href="{% url "edit_post" post.pk %}">Edit</a>
                         <a href="{% url "delete_post" post.pk %}">Delete</a>
