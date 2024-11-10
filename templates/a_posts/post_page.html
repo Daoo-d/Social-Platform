@@ -5,7 +5,14 @@
     {% include "include/header.html" %}
     
     {% include "include/hero.html" %}
-<content class = "block max-w-3xl mx-auto my-12 px-6">
+    <content x-data="{mobileSideBarOpen : false}" class="grid grid-cols-3 max-w-7xl mx-auto mt-6">
+        <mobilecategory class="md:hidden col-span-full mx-auto mb-6 z-10 relative" >
+            <a @click="mobileSideBarOpen=!mobileSideBarOpen" class="flex items-center cursor-pointer select-none font-bold hover:bg-gray-300 rounded-lg p-3">
+                <span>Category</span>
+                <img x-bind:class="mobileSideBarOpen && 'rotate-180 duration-300'" class="w-4 ml-1.5" height="60" src="https://img.icons8.com/ios-glyphs/60/777777/expand-arrow--v1.png" alt="expand-arrow--v1"/>
+            </a>
+        </mobilecategory>
+        <main class="order-2 md:order-1 col-span-full md:col-span-2 mr-[5%] md:mx-[10%]">
     <article class="card">
         <div class="flex items-center justify-between px-4 h-14">
             <h3 class="text-lg font-bold w-[50%] truncate">{{post.title}}</h3>
@@ -32,11 +39,11 @@
                     {% if post.comments.count %}
                         Comments
                         <span id="commentsCount-{{post.pk}}" class="font-light text-gray-500 ml-2">{{post.comments.count}}</span>
-                        {% else %}
-                            {% if user.is_authenticated %}
-                            Add Comment
-                            {% endif %}
+                    {% else %}
+                        {% if user.is_authenticated %}
+                        Add Comment
                         {% endif %}
+                    {% endif %}
                 </a>
                 <div class="flex items-center gap-4 [&>a:hover]:underline">
                     
@@ -50,24 +57,26 @@
             </div>
         </div>
     </article>
-    
+    {% if user.is_authenticated %}
     <div class="card !pb-0 -mt-3">
-        <form class="flex items-center p-4" autocomplete="off"
+        <form class="pl-2 replyform flex align-items" autocomplete="off"
         hx-post = "{% url "comment_sent" post.pk %}" 
         hx-target = "#tab-contents"
         hx-swap = "afterbegin"
         _="on htmx:afterRequest reset() me">
             {% csrf_token %}
             {{ commentForm.body }}
-            <button @click="open = false" class="block ml-2" type="submit">Submit</button>
+            <button @click="open = false" class="block ml-1 mr-2" type="submit">Submit</button>
         </form>
     </div>
+    {% endif %}
     
     {% if post.comments.count %}
     <div class="mb-20">
-        <div id="tabs" class="ml-4 flex gap-1 mb-4">
-            <a class="tab selected">Newest First</a> 
-            <a class="tab">Top Comments</a>
+        <div id="tabs" class="ml-4 flex gap-1 mb-4" hx-target="#tab-contents"
+        _="on htmx:afterOnLoad take .selected for event.target">
+            <a hx-get="{% url "post_page" post.pk %}" class="tab selected">Newest First</a> 
+            <a hx-get="{% url "post_page" post.pk %}?top" class="tab">Top Comments</a>
         </div>
     
         <div id="tab-contents">
@@ -77,5 +86,9 @@
         </div>
     </div>
     {% endif %}
+</main>
+{% load sidebar %}
+{% sidebar_view tag%}
+
 </content>
 {% endblock content %}

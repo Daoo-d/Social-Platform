@@ -4,6 +4,7 @@ from .forms import CreatePost,EditPost,CommentCreateForm,CommentReplyForm
 import requests
 from bs4 import BeautifulSoup # type: ignore
 from django.contrib import messages
+from django.db.models import Count
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
@@ -25,31 +26,47 @@ def home(request,tag=None):
 
 def post_page(request,pk):
     post=get_object_or_404(Post,pk=pk)
-
+    # Categories = Tag.objects.all()
     commentForm = CommentCreateForm()
     replyForm = CommentReplyForm()
+
+    if request.htmx:
+        if "top" in request.GET:
+            comments = post.comments.annotate(num_likes = Count('likes')).filter(num_likes__gt=0).order_by("-num_likes")    
+        else:
+            comments = post.comments.all()
+        return render(request,"snippets/loop_comments.html",{"comments":comments,"replyForm":replyForm})
 
     return render(request,"a_posts/post_page.html",{
         "post":post,
         "commentForm":commentForm,
-        "replyForm":replyForm
+        "replyForm":replyForm,
+        # "Categories":Categories
     })
 
 @login_required
 def comment_sent(request,pk):
     post=get_object_or_404(Post,pk=pk)
+    replyForm = CommentReplyForm()
     if request.method=="POST":
         form = CommentCreateForm(request.POST)
+        
         if form.is_valid:
             comment = form.save(commit=False)
             comment.author = request.user
             comment.parent_post = post
             comment.save()
-    return render(request,"snippets/addComment.html",{"comment":comment,"post":post}) 
+    return render(request,"snippets/addComment.html",{
+        "comment":comment,
+        "post":post,
+        "replyForm":replyForm
+        }) 
 
 @login_required
 def reply_sent(request,pk):
     comment=get_object_or_404(Comment,id=pk)
+    replyForm = CommentReplyForm()
+
     if request.method=="POST":
         form = CommentReplyForm(request.POST)
         if form.is_valid:
@@ -57,7 +74,11 @@ def reply_sent(request,pk):
             reply.author = request.user
             reply.parent_comment = comment
             reply.save()
-    return redirect('post_page',comment.parent_post.pk)        
+    return render(request,"snippets/addReply.html",{
+        "comment":comment,
+        "reply":reply,
+        "replyForm":replyForm
+        })        
 
 @login_required
 def delete_comment(request,pk):

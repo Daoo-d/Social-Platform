@@ -18,15 +18,23 @@
         {{comment.body}}
     </p>
     <div x-data="{ repliesOpen: false }" class="flex items-center justify-between flex-wrap text-sm px-2">
+        
         <a @click="repliesOpen = !repliesOpen" class="font-bold hover:underline cursor-pointer">
+            {% if comment.replies.count  %}
             <div class="inline-block" x-bind:class="repliesOpen && 'rotate-90 duration-300'">
                 <svg transform ="rotate(90)" width="9" height="9" viewBox="0 0 25 25">
                     <path d="M24 22h-24l12-20z"/>
                 </svg>
             </div>
             Replies
-            <span class="font-light text-gray-500 ml-1">{{comment.replies.count}}</span>
+            <span id="replyCount-{{comment.id}}" class="font-light text-gray-500 ml-1">{{comment.replies.count}}</span>
+            {% else %}
+            {% if user.is_authenticated %}
+            Add Reply
+            {% endif %}
+            {% endif %}
         </a>
+
         <div class="flex items-center gap-4 [&>a:hover]:underline">
             {% include "snippets/commentLikes.html" %}
 
@@ -40,12 +48,16 @@
             {% for reply in comment.replies.all %}
             {% include "include/replyfile.html" %}
             {% endfor %}
-
-            <form method="POST" action = "{% url "reply_sent" comment.id %}" class="replyform flex align-items" autocomplete="off">
+            {% if user.is_authenticated %}
+            <form class="replyform flex align-items" autocomplete="off"
+            hx-post = "{% url "reply_sent" comment.id %}" 
+            hx-target = "this"
+            hx-swap ="outerHTML">
                 {% csrf_token %}
                 {{replyForm.body}}
-                <button class="block" type="submit">Submit</button>
+                <button class="block ml-1 mr-2" type="submit">Submit</button>
             </form>
+            {% endif %}
         </div>
     </div> 
 </comment>
