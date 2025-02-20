@@ -41,19 +41,23 @@
         <section class="card p-4">
             <div class="flex items-center">
                 <img class="w-6 mr-2 -mt-3" src="{% static "images/fireheart_black.svg" %}" alt="">
-                <h2>Captions</h2>
+                <h2>Top Comments</h2>
             </div>
             <ul class="hoverlist">
-                <li><a href="">
+                {% for comment in top_comments %}
+                <li><a href=""class="flex items-stretch justify-between">
+                    <div class="flex items-center truncate">
+                    {% if comment.author %}
+                    <img class="w-8 h-8 object-cover mr-2" src="{{comment.author.profile.avatar}}" alt="">
+                    <span class="text-sm font-bold mr-1">{{comment.author.username}}</span>
+                    {% else %}
                     <img class="w-8 h-8 object-cover mr-2" src="{% static "images/avatar_default.svg" %}" alt="">
-                    <span class="text-sm font-bold mr-1">Harry</span>
-                    <span class="text-sm font-light text-gray-700">(5 likes)</span>
+                    <span class="text-sm font-bold mr-1">No author</span>
+                    {% endif %}
+                    </div>
+                    <span class="{% if user in comment.likes.all %}font-bold{% else %}font-light{% endif %} text-sm text-gray-700">{{comment.likes.count}} Like{{comment.likes.count|pluralize:'s'}} / {{comment.replies.count}}</span>
                 </a></li>
-                <li><a href="">
-                    <img class="w-8 h-8 object-cover mr-2" src="{% static "images/avatar_default.svg" %}" alt="">
-                    <span class="text-sm font-bold mr-1">Sam</span>
-                    <span class="text-sm font-light text-gray-700">(5 likes)</span>
-                </a></li>
+                {% endfor %}
             </ul>
         </section>
     </aside>

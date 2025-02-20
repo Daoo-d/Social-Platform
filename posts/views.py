@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db.models import Count
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 
 
@@ -18,11 +19,21 @@ def home(request,tag=None):
     else:
         posts = Post.objects.all()
     Categories = Tag.objects.all()    
-    return render(request,"a_posts/home.html",{
+    paginator = Paginator(posts,3)
+    page = int(request.GET.get('page',1))
+    try:
+        posts = paginator.page(page)
+    except:
+        return HttpResponse('')
+    context = {
         "posts":posts,
         "tag":tag,
-        "Categories":Categories
-    })
+        "Categories":Categories,
+        "page":page
+    }
+    if request.htmx:
+        return render(request,"snippets/loop_home_posts.html",context)
+    return render(request,"a_posts/home.html",context)
 
 def post_page(request,pk):
     post=get_object_or_404(Post,pk=pk)

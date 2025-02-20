@@ -1,0 +1,61 @@
+{% load static %}
+<fade-in class="opacity-0" _="on load transition my opacity to 1 over 0.2 seconds">
+    <div class="grid place-items-start gap-x-8 mx-auto    
+    {% if posts.count <= 1 %}grid-cols-1 max-w-xl
+    {% elif posts.count == 2 %}grid-cols-1 max-w-xl lg:grid-cols-2 lg:max-w-5xl
+    {% else %}grid-cols-1 max-w-xl lg:grid-cols-2 lg:max-w-5xl xl:grid-cols-3 xl:max-w-7xl{% endif %}">
+
+    {% if posts %}
+    {% for post in posts %}
+    <article class="card">
+        <div class="flex items-center justify-between px-4 h-14">
+            <h3 class="text-start leading-5 mr-1">{{post.title}}</h3>
+            <div class="text-sm text-gray-400 truncate">flickr<a href="" class="hover:underline ml-1" target="blank">@{{post.artist}}</a></div>
+        </div>
+        <figure>
+            <a href="{% url "post_page" post.pk %}"><img class="w-full" src="{{post.image}}"></a>
+        </figure>
+        <div class="p-4 pb-2">
+            {% if post.author %}
+            <a class="flex items-center gap-1 mb-4" href="{% url "user_profile" post.author.username %}">
+                <img class="w-8 h-8 object-cover rounded-full" src="{{post.author.profile.avatar}}">
+                <span class="font-bold hover:underline">{{post.author.profile.name}}</span>
+            </a>
+            {% else %}
+            <a class="flex items-center gap-1 mb-4" href="">
+                <img class="w-8 h-8 object-cover rounded-full" src="{% static "images/avatar_default.svg" %}">
+                <span class="font-bold hover:underline">no author</span>
+            </a>
+            {% endif %}
+            <p class="text-2xl mb-10 px-4 font1">{{post.description}}</p>
+            <div class="flex items-center gap-2 text-sm mb-5 flex-wrap">
+                {% for tag in post.tags.all %}
+                <a class="bg-gray-200 rounded-full px-3 py-1 hover:bg-gray-800 hover:text-white" href="{% url "category" tag.slug %}">
+                    {{tag}}
+                </a>
+                {% endfor %}
+            </div>
+            <div class="flex items-center justify-between text-sm px-2">
+                <a class="font-bold hover:underline" href="{% url "post_page" post.pk %}">
+                    {% if post.comments.count %}
+                    Comments
+                    <span class="font-light text-gray-500 ml-2">{{post.comments.count}}</span>
+                    {% endif %}
+                </a>
+                <div class="flex items-center gap-4 [&>a:hover]:underline">
+                    {% include "snippets/likes.html" %}
+                    {% if user.is_authenticated and post.author == request.user %}
+                    
+                    <a href="{% url "edit_post" post.pk %}">Edit</a>
+                    <a href="{% url "delete_post" post.pk %}">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </article>
+    {% endfor %}
+    {% else %}
+        <div class="w-full text-center mt-10">No top posts just yet</div>
+    {% endif %}
+</div>

@@ -1,23 +1,6 @@
-{% extends "base.html" %}
 {% load static %}
-{% block title %}
-    Insta fam
-{% endblock title %}
-
-{% block content %}
-{% include "include/message.html" %}
-    {% include "include/header.html" %}
-    
-    {% include "include/hero.html" %}
-<content x-data="{mobileSideBarOpen : false}" class="grid grid-cols-3 max-w-7xl mx-auto mt-6">
-    <mobilecategory class="md:hidden col-span-full mx-auto mb-6 z-10 relative" >
-        <a @click="mobileSideBarOpen=!mobileSideBarOpen" class="flex items-center cursor-pointer select-none font-bold hover:bg-gray-300 rounded-lg p-3">
-            <span>Category</span>
-            <img x-bind:class="mobileSideBarOpen && 'rotate-180 duration-300'" class="w-4 ml-1.5" height="60" src="https://img.icons8.com/ios-glyphs/60/777777/expand-arrow--v1.png" alt="expand-arrow--v1"/>
-        </a>
-    </mobilecategory>
-    <main class="order-2 md:order-1 col-span-full md:col-span-2 mr-[5%] md:mx-[10%]">
-        {% for post in posts %}
+<fade-in class="opacity-0" _="on load transition my opacity to 1 over 0.3 seconds">
+{% for post in posts %}
         <article class="card">
             <div class="flex items-center justify-between px-4 py-10">
                 <h3 class="text-lg font-bold w-[50%] truncate">{{post.title}}</h3>
@@ -76,10 +59,3 @@
         hx-target = "this"
         hx-swap = "outerHTML">
         </div>
-    </main>
-    {% load sidebar %}
-    {% sidebar_view tag user %}
-</content>
-
-{% endblock content %}
-
