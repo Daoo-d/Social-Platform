@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from environ import Env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,14 +19,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
+env = Env()
+env.read_env()
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-edup%mym$nx#1%dw1)lt+4a7-w3_n4rj9+(2t76yj@m3+-^(nu"
+SECRET_KEY = env("SECRET_KEY")
 
+ENVIRONMENT = env("ENVIRONMENT", default="production")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT == "development":
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost:8000'
+]
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -36,6 +47,7 @@ AUTHENTICATION_BACKENDS = [
 
 INSTALLED_APPS = [
     "d_profile",
+    "admin_honeypot",
     "posts",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -55,6 +67,7 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -137,6 +150,7 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
